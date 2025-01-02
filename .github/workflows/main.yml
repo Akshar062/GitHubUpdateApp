@@ -36,7 +36,7 @@ jobs:
         with:
           files: build/libs/*.apk  # Change this to your build artifacts (e.g., APK, ZIP files)
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ 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 }}
 
       # Optional: Remove if not needed
       - name: Upload release assets
