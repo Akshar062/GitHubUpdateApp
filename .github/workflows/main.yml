@@ -1,0 +1,45 @@
+name: Create Release
+
+on:
+  push:
+    branches:
+      - main  # Or your default branch
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+
+      - name: Build app
+        run: ./gradlew build  # Replace with your build command
+
+      - name: Get current version from build.gradle
+        id: version
+        run: |
+          VERSION=$(./gradlew -q printVersion)  # Assuming you have a task to fetch the version
+          echo "version=$VERSION" >> $GITHUB_ENV
+
+      - name: Create Git tag for release
+        run: |
+          git tag -a v${{ env.version }} -m "Release v${{ env.version }}"
+          git push origin v${{ env.version }}
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build/libs/*.apk  # Change this to your build artifacts (e.g., APK, ZIP files)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Optional: Remove if not needed
+      - name: Upload release assets
+        run: |
+          echo "Uploading assets for version ${{ env.version }}"
+          # Add commands to upload additional files such as changelogs, screenshots, etc.
